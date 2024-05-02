@@ -43,11 +43,11 @@ export default function RegisterForm({
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
 				<div className="flex flex-col gap-1">
-					<span className="text-2xl font-medium">Register</span>
+					<span className="text-2xl font-medium">إنشاء حساب</span>
 					<span className="text-sm text-muted-foreground">
-						Already have an account?{" "}
+						لديك حساب ؟{" "}
 						<Link className="font-medium text-blue-400" href="/login">
-							Login
+							تسجيل الدخول
 						</Link>
 						.
 					</span>
@@ -58,7 +58,7 @@ export default function RegisterForm({
 					render={({ field }) => (
 						<FormItem>
 							<FormControl>
-								<Input placeholder="Username" {...field} />
+								<Input placeholder="اسم المستخدم" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -70,7 +70,7 @@ export default function RegisterForm({
 					render={({ field }) => (
 						<FormItem>
 							<FormControl>
-								<Input placeholder="Email" {...field} />
+								<Input placeholder="البريد الالكتروني" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -82,33 +82,19 @@ export default function RegisterForm({
 					render={({ field }) => (
 						<FormItem>
 							<FormControl>
-								<Input type="password" placeholder="Password" {...field} />
+								<Input type="password" placeholder="كلمة المرور" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
 
-				<div>
-					<p className="text-sm leading-snug">
-						By creating an account, you agree to our{" "}
-						<Link className="font-medium text-blue-400" href="/terms">
-							Terms of Service
-						</Link>{" "}
-						and have read and acknowledge the{" "}
-						<Link className="font-medium text-blue-400" href="/privacy">
-							Privacy Policy
-						</Link>
-						.
-					</p>
-				</div>
-
 				<Button
 					disabled={form.formState.isSubmitting}
 					className="w-full"
 					type="submit"
 				>
-					Sign up
+					تسجيل حساب
 				</Button>
 			</form>
 		</Form>

@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CounterClockwise } from "@/lib/icons";
 
 const trips = [
 	{
@@ -67,12 +66,6 @@ export default function TripsPage() {
 						</CardContent>
 					</Card>
 				))}
-			</div>
-			<div className="flex w-full flex-col gap-8">
-				<div className="flex flex-col gap-2">
-					<span>aymans</span>
-					<CounterClockwise className="h-10 w-10 fill-black"></CounterClockwise>
-				</div>
 			</div>
 		</section>
 	);

@@ -53,5 +53,5 @@ export async function RegisterAction(
 		};
 	}
 
-	return redirect("/");
+	return redirect("/trips");
 }
