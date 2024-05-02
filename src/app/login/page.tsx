@@ -2,9 +2,10 @@ import { LoginForm } from "@/components/LoginForm";
 import { lucia } from "@/lib/auth";
 import { db } from "@/lib/db";
 import hash from "@/lib/utils";
-import { LoginFormError } from "@/lib/zodSchemas";
+import { LoginFormError, loginFormSchema } from "@/lib/zodSchemas";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 
 export default function LoginPage() {
 	return (
@@ -17,40 +18,34 @@ export default function LoginPage() {
 }
 
 async function LoginAction(
-	email: string,
-	password: string,
+	input: z.infer<typeof loginFormSchema>,
 ): Promise<LoginFormError | undefined> {
 	"use server";
 
-	const existingUser = await db.query.TB_user.findFirst({
-		where: (user, { eq }) => eq(user.email, email),
-	});
+	try {
+		const data = await loginFormSchema.parseAsync(input);
 
-	const hashedPassword = hash(password);
+		const user = await db.query.TB_user.findFirst({
+			where: (user, { eq }) => eq(user.email, data.email),
+		});
 
-	if (!existingUser) {
+		if (!user || user.password != hash(data.password)) {
+			return { field: "root", message: "Email or password is incorrect" };
+		}
+
+		const session = await lucia.createSession(user.id, {});
+		const sessionCookie = lucia.createSessionCookie(session.id);
+		cookies().set(
+			sessionCookie.name,
+			sessionCookie.value,
+			sessionCookie.attributes,
+		);
+	} catch (e) {
 		return {
 			field: "root",
-			message: "Incorrect username or password",
+			message: "An unexpected error occured, please try again later",
 		};
 	}
 
-	const validPassword = hashedPassword == existingUser.password;
-
-	if (!validPassword) {
-		return {
-			field: "root",
-			message: "Incorrect username or password",
-		};
-	}
-
-	const session = await lucia.createSession(existingUser.id, {});
-	const sessionCookie = lucia.createSessionCookie(session.id);
-	cookies().set(
-		sessionCookie.name,
-		sessionCookie.value,
-		sessionCookie.attributes,
-	);
-
-	return redirect("/");
+	redirect("/dashboard");
 }

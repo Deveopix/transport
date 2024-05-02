@@ -24,8 +24,7 @@ export function LoginForm({
 	loginAction,
 }: {
 	loginAction: (
-		email: string,
-		password: string,
+		input: z.infer<typeof loginFormSchema>,
 	) => Promise<LoginFormError | undefined>;
 }) {
 	const form = useForm<z.infer<typeof loginFormSchema>>({
@@ -36,7 +35,7 @@ export function LoginForm({
 		},
 	});
 
-	async function onSubmit(values: z.infer<typeof registerFormSchema>) {
+	async function onSubmit(values: z.infer<typeof loginFormSchema>) {
 		const error = await loginAction(values);
 
 		if (error) {
