@@ -53,5 +53,5 @@ export async function RegisterAction(
 		};
 	}
 
-	redirect("/dashboard");
+	return redirect("/");
 }
