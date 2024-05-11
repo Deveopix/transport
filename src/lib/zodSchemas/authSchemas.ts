@@ -1,10 +1,5 @@
-import { Path } from "react-hook-form";
-import { ZodType, z } from "zod";
-
-export interface BaseZodError<T extends ZodType<any, any, any>> {
-	field: Path<z.TypeOf<T>> | "root";
-	message: string;
-}
+import { BaseZodError } from "@/lib/zodSchemas/errorUtils";
+import { z } from "zod";
 
 export const loginFormSchema = z.object({
 	email: z.string().email(),

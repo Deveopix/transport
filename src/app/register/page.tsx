@@ -3,7 +3,10 @@ import { lucia } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { TB_user } from "@/lib/schema";
 import hash from "@/lib/utils";
-import { RegisterFormError, registerFormSchema } from "@/lib/zodSchemas";
+import {
+	RegisterFormError,
+	registerFormSchema,
+} from "@/lib/zodSchemas/authSchemas";
 import { nanoid } from "nanoid";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";

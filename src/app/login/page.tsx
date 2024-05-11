@@ -2,7 +2,7 @@ import { LoginForm } from "@/components/LoginForm";
 import { lucia } from "@/lib/auth";
 import { db } from "@/lib/db";
 import hash from "@/lib/utils";
-import { LoginFormError, loginFormSchema } from "@/lib/zodSchemas";
+import { LoginFormError, loginFormSchema } from "@/lib/zodSchemas/authSchemas";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
