@@ -47,5 +47,5 @@ async function LoginAction(
 		};
 	}
 
-	redirect("/dashboard");
+	redirect("/trips");
 }

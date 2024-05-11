@@ -52,11 +52,11 @@ export function LoginForm({
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
 				<div className="flex flex-col gap-1">
-					<span className="text-2xl font-medium">Login</span>
+					<span className="text-2xl font-medium">تسجيل الدخول</span>
 					<span className="text-sm text-muted-foreground">
-						New here?{" "}
+						ليس لديك حساب؟{" "}
 						<Link className="font-medium text-blue-400" href="/register">
-							Make an account
+							انشاء حساب جديد{" "}
 						</Link>
 						.
 					</span>
@@ -67,7 +67,7 @@ export function LoginForm({
 					render={({ field }) => (
 						<FormItem>
 							<FormControl>
-								<Input placeholder="Email" {...field} />
+								<Input placeholder="البريد الالكتروني" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -79,27 +79,30 @@ export function LoginForm({
 					render={({ field }) => (
 						<FormItem>
 							<FormControl>
-								<Input type="password" placeholder="Password" {...field} />
+								<Input type="password" placeholder="كلمة المرور" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
-				<div>
-					<Link
-						className="text-sm text-muted-foreground"
-						href="/forgot-password"
+				<div className="space-y-2">
+					<Button
+						disabled={form.formState.isSubmitting}
+						className="w-full"
+						type="submit"
 					>
-						Forgot password?
-					</Link>
+						تسجيل الدخول
+					</Button>
+
+					<Button
+						disabled={form.formState.isSubmitting}
+						className="w-full"
+						type="submit"
+						variant="outline"
+					>
+						تسجيل الدخول كضيف
+					</Button>
 				</div>
-				<Button
-					disabled={form.formState.isSubmitting}
-					className="w-full"
-					type="submit"
-				>
-					Sign in
-				</Button>
 			</form>
 		</Form>
 	);
