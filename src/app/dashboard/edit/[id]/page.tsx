@@ -11,6 +11,7 @@ import {
 	TripTimeFormError,
 	TripTimeUpdateFormError,
 	tripInfoFormPartialSchema,
+	tripInfoFormSchema,
 	tripTimeFormSchema,
 	tripTimeUpdateFormSchema,
 } from "@/lib/zodSchemas/dashboardSchemas";
@@ -52,11 +53,16 @@ export default async function EditTripPage({ params }: EditTripPageProps) {
 		.filter((x) => x.isBackward)
 		.sort((a, b) => a.time.getTime() - b.time.getTime());
 
+	const isValid =
+		tripInfoFormSchema.safeParse(trip).success &&
+		forward.length > 0 &&
+		backward.length > 0;
+
 	return (
 		<div className="container p-8">
 			<div className="flex flex-col gap-8">
 				<div className="flex items-center gap-12">
-					<span className="text-3xl">رحلة جديدة</span>
+					<span className="text-3xl">تعديل الرحلة</span>
 					<Button asChild>
 						<Link href="/dashboard">عودة</Link>
 					</Button>
@@ -83,6 +89,7 @@ export default async function EditTripPage({ params }: EditTripPageProps) {
 				</div>
 				<div className="mr-6 flex gap-2">
 					<PublishDialog
+						disabled={!isValid}
 						tripInfo={trip}
 						tripTimes={trip.tripTimes}
 						publishAction={async () => {
@@ -134,6 +141,8 @@ async function UpdateTripInfoAction(
 			.update(TB_trip)
 			.set({ ...input })
 			.where(eq(TB_trip.id, id));
+
+		revalidatePath("/");
 	} catch (e) {
 		return {
 			field: "root",
