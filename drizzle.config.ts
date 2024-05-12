@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import "dotenv/config";
-import type { Config } from "drizzle-kit";
+import { defineConfig } from "drizzle-kit";
 
 config({ path: ".env.local" });
 
@@ -8,11 +8,11 @@ if (!process.env.DB_URL) {
 	throw new Error("DB_URL environment variable is required.");
 }
 
-export default {
+export default defineConfig({
 	schema: "./src/lib/schema.ts",
 	out: "./src/lib/migrations",
-	driver: "pg",
+	dialect: "postgresql",
 	dbCredentials: {
-		connectionString: process.env.DB_URL!,
+		url: process.env.DB_URL!,
 	},
-} satisfies Config;
+});
