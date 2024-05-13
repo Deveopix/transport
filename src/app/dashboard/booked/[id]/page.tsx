@@ -58,7 +58,7 @@ export default async function BookedPage({ params }: BookedPageProps) {
 				{allTime.map((time) => (
 					<Button key={time.id}>
 						{time.time.toLocaleTimeString()}
-						<Link href={`/booked/${time.id}`}>الحجوزات</Link>
+						<Link href={`/booked/${time.id}`}></Link>
 					</Button>
 				))}
 			</div>

@@ -25,9 +25,8 @@ export default async function TripsPage() {
 									<span dir="ltr">{x.voteEnd!.toLocaleString()}</span>
 								</span>
 							</div>
-							<Button>
-								<Link href={`/trips/details/${x.id}`}></Link>
-								التفاصيل
+							<Button className="w-fit" asChild>
+								<Link href={`/trips/details/${x.id}`}>التفاصيل</Link>
 							</Button>
 						</CardContent>
 					</Card>
