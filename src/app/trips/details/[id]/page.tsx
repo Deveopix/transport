@@ -4,7 +4,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { db } from "@/lib/db";
 import { Clockwise, CounterClockwise } from "@/lib/icons";
 import { notFound } from "next/navigation";
-
 interface TripDetailsProps {
 	params: {
 		id: string;
@@ -54,9 +53,13 @@ export default async function TripDetails({ params }: TripDetailsProps) {
 					</div>
 					{forward.map((time, index) => (
 						<div className="flex gap-3 p-2">
-							<RadioGroupItem value={index.toString()} id={index.toString()} />
+							<RadioGroupItem value={time.id} id={index.toString()} />
 							<Label htmlFor={index.toString()} dir="ltr">
-								{time.time.toDateString()}
+								{new Date(time.time).toLocaleTimeString([], {
+									hour: "2-digit",
+									minute: "2-digit",
+									hour12: true,
+								})}
 							</Label>
 						</div>
 					))}
@@ -70,11 +73,15 @@ export default async function TripDetails({ params }: TripDetailsProps) {
 					{backward.map((time, index) => (
 						<div className="flex gap-3 p-2">
 							<RadioGroupItem
-								value={index + forward.length.toString()}
+								value={time.id}
 								id={index + forward.length.toString()}
 							/>
 							<Label htmlFor={index + forward.length.toString()} dir="ltr">
-								{time.time.toDateString()}
+								{new Date(time.time).toLocaleTimeString([], {
+									hour: "2-digit",
+									minute: "2-digit",
+									hour12: true,
+								})}
 							</Label>
 						</div>
 					))}

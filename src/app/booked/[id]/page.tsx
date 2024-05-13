@@ -95,10 +95,18 @@ export default async function AdminPage({
 							<tr key={index} className="bg-gray-100">
 								<td className="border px-3 py-2">{user.username}</td>
 								<td className="border px-3 py-2">
-									{user.forwardTime.toTimeString()}
+									{new Date(user.forwardTime).toLocaleTimeString([], {
+										hour: "2-digit",
+										minute: "2-digit",
+										hour12: true,
+									})}{" "}
 								</td>
 								<td className="border px-3 py-2">
-									{user.backwardTime.toTimeString()}
+									{new Date(user.backwardTime).toLocaleTimeString([], {
+										hour: "2-digit",
+										minute: "2-digit",
+										hour12: true,
+									})}
 								</td>
 								<td className="border px-3 py-2">{tripName}</td>
 							</tr>
