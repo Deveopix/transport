@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { db } from "@/lib/db";
-import { Link } from "lucide-react";
+import Link from "next/link";
 
 export default async function TripsPage() {
 	const trips = await db.query.TB_trip.findMany({
@@ -26,7 +26,7 @@ export default async function TripsPage() {
 								</span>
 							</div>
 							<Button className="w-fit" asChild>
-								<Link href={`/trips/details/${x.id}`}>التفاصيل</Link>
+								<Link href={`trips/details/${x.id}`}>التفاصيل</Link>
 							</Button>
 						</CardContent>
 					</Card>

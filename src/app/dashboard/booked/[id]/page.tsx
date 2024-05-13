@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { getUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { Link } from "lucide-react";
+import Link from "next/link";
+
 import { notFound } from "next/navigation";
 
 interface BookedPageProps {
@@ -56,9 +57,10 @@ export default async function BookedPage({ params }: BookedPageProps) {
 		<div className="container p-8">
 			<div className="flex flex-row gap-1">
 				{allTime.map((time) => (
-					<Button key={time.id}>
-						{time.time.toLocaleTimeString()}
-						<Link href={`/booked/${time.id}`}></Link>
+					<Button key={time.id} className="w-fit" asChild>
+						<Link href={`/booked/${time.id}`}>
+							{time.time.toLocaleTimeString()}
+						</Link>
 					</Button>
 				))}
 			</div>
