@@ -24,6 +24,7 @@ import {
 	tripInfoFormPartialSchema,
 } from "@/lib/zodSchemas/dashboardSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { startTransition, useEffect, useOptimistic } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -37,26 +38,35 @@ export default function TripInfoForm({
 		input: z.infer<typeof tripInfoFormPartialSchema>,
 	) => Promise<TripInfoFormError | undefined>;
 }) {
+	const [optTripInfo, setTripInfo] = useOptimistic(tripInfo);
+
 	const form = useForm<z.infer<typeof tripInfoFormPartialSchema>>({
 		resolver: zodResolver(tripInfoFormPartialSchema),
-		defaultValues: tripInfo,
+		defaultValues: optTripInfo,
 	});
 
 	async function onSubmit(values: z.infer<typeof tripInfoFormPartialSchema>) {
-		const error = await updateTripInfoAction(values);
+		startTransition(async () => {
+			setTripInfo(values);
+			const error = await updateTripInfoAction(values);
 
-		if (error) {
-			form.setError(
-				error.field,
-				{ message: error.message },
-				{ shouldFocus: true },
-			);
+			if (error) {
+				form.setError(
+					error.field,
+					{ message: error.message },
+					{ shouldFocus: true },
+				);
 
-			return;
-		}
+				return;
+			}
 
-		toast.success("تم تحديث البيانات!");
+			toast.success("تم تحديث البيانات!");
+		});
 	}
+
+	useEffect(() => {
+		form.reset(optTripInfo);
+	}, [optTripInfo]);
 
 	return (
 		<Card>
@@ -128,7 +138,11 @@ export default function TripInfoForm({
 						/>
 					</CardContent>
 					<CardFooter>
-						<Button disabled={form.formState.isSubmitting}>تأكيد</Button>
+						<Button
+							disabled={form.formState.isSubmitting || !form.formState.isDirty}
+						>
+							تأكيد
+						</Button>
 					</CardFooter>
 				</form>
 			</Form>
