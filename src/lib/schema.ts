@@ -99,18 +99,28 @@ export const TB_tripVote = pgTable(
 		userId: text("user_id")
 			.notNull()
 			.references(() => TB_user.id, { onDelete: "cascade" }),
-		tripTimeId: text("trip_time_id")
+		forwardTripTimeId: text("forward_trip_time_id")
+			.notNull()
+			.references(() => TB_tripTime.id, { onDelete: "cascade" }),
+		backwardTripTimeId: text("backward_trip_time_id")
 			.notNull()
 			.references(() => TB_tripTime.id, { onDelete: "cascade" }),
 	},
 	(table) => ({
-		mainIdx: uniqueIndex("main_idx").on(table.userId, table.tripTimeId),
+		mainIdx: uniqueIndex("main_idx").on(
+			table.forwardTripTimeId,
+			table.backwardTripTimeId,
+		),
 	}),
 );
 
 export const RE_tripVote = relations(TB_tripVote, ({ one }) => ({
-	tripTime: one(TB_tripTime, {
-		fields: [TB_tripVote.tripTimeId],
+	forwardTripTime: one(TB_tripTime, {
+		fields: [TB_tripVote.forwardTripTimeId],
+		references: [TB_tripTime.id],
+	}),
+	backwardTripTime: one(TB_tripTime, {
+		fields: [TB_tripVote.backwardTripTimeId],
 		references: [TB_tripTime.id],
 	}),
 	user: one(TB_user, {
@@ -125,4 +135,5 @@ export const userViewSchema = userSchema.pick({ username: true, email: true });
 export type UserType = z.infer<typeof userSchema>;
 export type UserViewType = z.infer<typeof userViewSchema>;
 
+export type Trip = typeof TB_trip.$inferSelect;
 export type TripTime = typeof TB_tripTime.$inferSelect;
