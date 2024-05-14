@@ -23,7 +23,7 @@ export default async function BookedPage({ params }: BookedPageProps) {
 	// >;
 
 	if (!user) {
-		return;
+		return notFound();
 	}
 
 	const trip = await db.query.TB_trip.findFirst({
@@ -94,30 +94,4 @@ export default async function BookedPage({ params }: BookedPageProps) {
 			</div> */}
 		</div>
 	);
-}
-
-async function getStudent(timeId: string): Promise<
-	{
-		id: string;
-		username: string;
-		email: string;
-		password: string;
-	}[]
-> {
-	try {
-		const time = await db.query.TB_tripVote.findMany({
-			where: (vote, { eq }) => eq(vote.tripTimeId, timeId),
-		});
-
-		const userIds = time.map((vote) => vote.userId);
-
-		const students = await db.query.TB_user.findMany({
-			where: (user, { inArray }) => inArray(user.id, userIds),
-		});
-
-		return students;
-	} catch (error) {
-		console.error("Error retrieving students:", error);
-		throw error;
-	}
 }
