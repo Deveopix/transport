@@ -1,7 +1,10 @@
-import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/DataTable";
+import {
+	BookedDetails,
+	bookedColumns,
+} from "@/components/dashboard/booked/BookedColumns";
 import { getUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import Link from "next/link";
 
 import { notFound } from "next/navigation";
 
@@ -29,7 +32,23 @@ export default async function BookedPage({ params }: BookedPageProps) {
 	const trip = await db.query.TB_trip.findFirst({
 		where: (trip, { eq }) => eq(trip.id, params.id),
 		with: {
-			tripTimes: true,
+			tripTimes: {
+				where: (tripTime, { eq }) => eq(tripTime.isBackward, false),
+				with: {
+					forwardTripVotes: {
+						with: {
+							backwardTripTime: true,
+							user: true,
+						},
+					},
+					backwardTripVotes: {
+						with: {
+							forwardTripTime: true,
+							user: true,
+						},
+					},
+				},
+			},
 		},
 	});
 
@@ -37,13 +56,25 @@ export default async function BookedPage({ params }: BookedPageProps) {
 		return notFound();
 	}
 
-	const forward = trip.tripTimes
-		.filter((x) => !x.isBackward)
-		.sort((a, b) => a.time.getTime() - b.time.getTime());
-	const backward = trip.tripTimes
-		.filter((x) => x.isBackward)
-		.sort((a, b) => a.time.getTime() - b.time.getTime());
-	const allTime = [...backward, ...forward];
+	const data: BookedDetails[] = [];
+
+	for (let tripTime of trip.tripTimes) {
+		for (let tripVote of tripTime.forwardTripVotes) {
+			data.push({
+				username: tripVote.user.username,
+				forwardTripTime: tripTime.time,
+				backwardTripTime: tripVote.backwardTripTime.time,
+			});
+		}
+
+		for (let tripVote of tripTime.backwardTripVotes) {
+			data.push({
+				username: tripVote.user.username,
+				forwardTripTime: tripTime.time,
+				backwardTripTime: tripVote.forwardTripTime.time,
+			});
+		}
+	}
 
 	// async function handleClick(timeId: string) {
 	// 	try {
@@ -55,43 +86,7 @@ export default async function BookedPage({ params }: BookedPageProps) {
 
 	return (
 		<div className="container p-8">
-			<div className="flex flex-row gap-1">
-				{allTime.map((time) => (
-					<Button key={time.id} className="w-fit" asChild>
-						<Link href={`/booked/${time.id}`}>
-							{time.time.toLocaleTimeString()}
-						</Link>
-					</Button>
-				))}
-			</div>
-			{/* <div className="container mx-auto">
-				<div className="overflow-x-auto">
-					<table
-						id="admin-table"
-						className="w-full table-auto border-2 border-blue-900"
-					>
-						<thead>
-							<tr>
-								<th className="border-2 border-black px-3 py-2">الطالب</th>
-								<th className="border-2 border-black px-3 py-2">
-									البريد الإلكتروني
-								</th>
-								<th className="border-2 border-black px-3 py-2">كلمة المرور</th>
-							</tr>
-						</thead>
-						<tbody>
-							{students &&
-								students.map((student, index) => (
-									<tr key={index} className="bg-gray-100">
-										<td className="border px-3 py-2">{student.username}</td>
-										<td className="border px-3 py-2">{student.email}</td>
-										<td className="border px-3 py-2">{student.password}</td>
-									</tr>
-								))}
-						</tbody>
-					</table>
-				</div>
-			</div> */}
+			<DataTable columns={bookedColumns} data={data} />
 		</div>
 	);
 }
