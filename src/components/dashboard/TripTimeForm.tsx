@@ -4,6 +4,14 @@ import { Button } from "@/components/ui/button";
 import { TimePicker } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import {
 	Form,
 	FormControl,
 	FormField,
@@ -39,6 +47,7 @@ interface TripTimeFormProps {
 	) => Promise<TripTimeUpdateFormError | undefined>;
 	deleteTripTimeAction: (id: string) => Promise<string | undefined>;
 	tripTimes: TripTime[];
+	warnOnDelete: boolean;
 	isBackward?: boolean;
 }
 
@@ -47,6 +56,7 @@ export default function TripTimeForm({
 	updateTripTimeAction,
 	deleteTripTimeAction,
 	tripTimes,
+	warnOnDelete,
 	isBackward,
 }: TripTimeFormProps) {
 	const schema = tripTimeFormSchema.omit({ isBackward: true });
@@ -156,6 +166,7 @@ export default function TripTimeForm({
 										tripTime={x}
 										updateTripTimeAction={updateTripTimeAction.bind(null, x.id)}
 										deleteTripTimeAction={deleteTripTimeAction.bind(null, x.id)}
+										warnOnDelete={warnOnDelete}
 									/>
 								))}
 							</ScrollArea>
@@ -171,12 +182,14 @@ function TripTimeCardForm({
 	tripTime,
 	updateTripTimeAction,
 	deleteTripTimeAction,
+	warnOnDelete,
 }: {
 	tripTime: TripTime;
 	updateTripTimeAction: (
 		input: z.infer<typeof tripTimeUpdateFormSchema>,
 	) => Promise<TripTimeUpdateFormError | undefined>;
 	deleteTripTimeAction: () => Promise<string | undefined>;
+	warnOnDelete: boolean;
 }) {
 	const form = useForm<z.infer<typeof tripTimeUpdateFormSchema>>({
 		resolver: zodResolver(tripTimeUpdateFormSchema),
@@ -276,13 +289,42 @@ function TripTimeCardForm({
 						</Button>
 					</form>
 				</Form>
-				<SubmitButton
-					action={deleteTripTimeAction}
-					className="w-fit p-2"
-					variant="destructive"
-				>
-					<Trash2 />
-				</SubmitButton>
+				{warnOnDelete ? (
+					<Dialog>
+						<DialogTrigger asChild>
+							<Button className="w-fit p-2" variant="destructive">
+								<Trash2 />
+							</Button>
+						</DialogTrigger>
+						<DialogContent>
+							<DialogHeader className="mt-5">
+								<DialogTitle className="text-right">تحذير!</DialogTitle>
+							</DialogHeader>
+							<span className="text-right font-medium text-destructive">
+								سيتم حذف جميع الحجوزات على المتعلقة بالوقت! هل انت متأكد؟
+							</span>
+							<div className="grid w-fit grid-cols-2 gap-2">
+								<SubmitButton
+									action={deleteTripTimeAction}
+									variant="destructive"
+								>
+									نعم
+								</SubmitButton>
+								<DialogClose asChild>
+									<Button>لا</Button>
+								</DialogClose>
+							</div>
+						</DialogContent>
+					</Dialog>
+				) : (
+					<SubmitButton
+						action={deleteTripTimeAction}
+						className="w-fit p-2"
+						variant="destructive"
+					>
+						<Trash2 />
+					</SubmitButton>
+				)}
 			</CardContent>
 		</Card>
 	);

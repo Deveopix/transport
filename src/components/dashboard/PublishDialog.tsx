@@ -38,9 +38,7 @@ export default function PublishDialog({
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button className="w-fit" disabled={disabled}>
-					نشر
-				</Button>
+				<Button disabled={disabled}>نشر</Button>
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader className="mt-5">
