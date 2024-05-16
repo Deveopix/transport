@@ -14,7 +14,6 @@ export const tripInfoFormSchema = z.object({
 export const tripInfoFormPartialSchema = z.object({
 	name: z
 		.string()
-		.min(1)
 		.max(32)
 		.nullable()
 		.transform((x) => x || null),

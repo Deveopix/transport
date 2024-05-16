@@ -42,6 +42,7 @@ export default function SubmitButton({
 		switch (failType) {
 			case "toast":
 				toast.error(error);
+				break;
 			case "label":
 			default:
 				setError(error);

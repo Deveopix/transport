@@ -71,17 +71,17 @@ export default async function EditTripPage({ params }: EditTripPageProps) {
 				<div className="grid grid-cols-3 gap-8">
 					<TripInfoForm
 						tripInfo={trip}
-						updateTripInfoAction={UpdateTripInfoAction.bind(null, params.id)}
+						updateTripInfoAction={UpdateTripInfoAction.bind(null, trip.id)}
 					/>
 					<TripTimeForm
 						tripTimes={forward}
-						addTripTimeAction={AddTripTimeAction.bind(null, params.id)}
+						addTripTimeAction={AddTripTimeAction.bind(null, trip.id)}
 						updateTripTimeAction={UpdateTripTimeAction}
 						deleteTripTimeAction={DeleteTripTimeAction}
 					/>
 					<TripTimeForm
 						tripTimes={backward}
-						addTripTimeAction={AddTripTimeAction.bind(null, params.id)}
+						addTripTimeAction={AddTripTimeAction.bind(null, trip.id)}
 						updateTripTimeAction={UpdateTripTimeAction}
 						deleteTripTimeAction={DeleteTripTimeAction}
 						isBackward
@@ -90,12 +90,28 @@ export default async function EditTripPage({ params }: EditTripPageProps) {
 				<div className="mr-6 flex gap-2">
 					<PublishDialog
 						disabled={!isValid}
-						tripInfo={trip}
+						tripInfo={trip as z.infer<typeof tripInfoFormSchema>}
 						tripTimes={trip.tripTimes}
 						publishAction={async () => {
 							"use server";
 
-							return undefined;
+							const user = await getUser();
+
+							if (!user || user.id != trip.managerId) {
+								return "Unauthorized";
+							}
+
+							try {
+								await db
+									.update(TB_trip)
+									.set({ published: true })
+									.where(eq(TB_trip.id, trip.id));
+							} catch {
+								return "An unexpected error occured, please try again later";
+							}
+
+							revalidatePath("/");
+							redirect("/dashboard");
 						}}
 					/>
 					<SubmitButton
@@ -105,7 +121,7 @@ export default async function EditTripPage({ params }: EditTripPageProps) {
 							"use server";
 
 							try {
-								await db.delete(TB_trip).where(eq(TB_trip.id, params.id));
+								await db.delete(TB_trip).where(eq(TB_trip.id, trip.id));
 							} catch {
 								return "An unexpected error occured, please try again later";
 							}
