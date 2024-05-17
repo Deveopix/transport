@@ -43,6 +43,7 @@ export default function BookTrip({
 		if (!user || !user.id) {
 			return { error: "User not found" };
 		}
+		//
 		const vote = {
 			id: nanoid(),
 			userId: user?.id,
