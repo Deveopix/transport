@@ -9,9 +9,12 @@ import {
 	FormLabel,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { getUser } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { Clockwise, CounterClockwise } from "@/lib/icons";
-import { TripTime } from "@/lib/schema";
+import { TB_tripVote, TripTime } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { nanoid } from "nanoid";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -35,8 +38,22 @@ export default function BookTrip({
 		resolver: zodResolver(schema),
 	});
 
-	function onSubmit(values: z.infer<typeof schema>) {
-		console.log(values);
+	async function onSubmit(values: z.infer<typeof schema>) {
+		const user = await getUser();
+		if (!user || !user.id) {
+			return { error: "User not found" };
+		}
+		const vote = {
+			id: nanoid(),
+			userId: user?.id,
+			forwardTripTimeId: values.forwardId,
+			backwardTripTimeId: values.backwardId,
+		};
+		try {
+			await db.insert(TB_tripVote).values(vote);
+		} catch {
+			return { error: "error" };
+		}
 	}
 
 	return (
