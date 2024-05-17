@@ -19,6 +19,7 @@ import {
 	TripTimeFormError,
 	TripTimeUpdateFormError,
 	tripInfoFormPartialSchema,
+	tripInfoFormPublishedSchema,
 	tripInfoFormSchema,
 	tripTimeFormSchema,
 	tripTimeUpdateFormSchema,
@@ -79,7 +80,18 @@ export default async function EditTripPage({ params }: EditTripPageProps) {
 				<div className="grid grid-cols-3 gap-8">
 					<TripInfoForm
 						tripInfo={trip}
-						updateTripInfoAction={UpdateTripInfoAction.bind(null, trip.id)}
+						{...(trip.published
+							? {
+									published: true,
+									editTripInfoAction: EditTripInfoAction.bind(null, trip.id),
+								}
+							: {
+									published: false,
+									updateTripInfoAction: UpdateTripInfoAction.bind(
+										null,
+										trip.id,
+									),
+								})}
 					/>
 					<TripTimeForm
 						tripTimes={forward}
@@ -189,6 +201,36 @@ async function DeleteTripAction(tripId: string) {
 async function UpdateTripInfoAction(
 	id: string,
 	input: z.infer<typeof tripInfoFormPartialSchema>,
+): Promise<TripInfoFormError | undefined> {
+	"use server";
+
+	const user = await getUser();
+
+	if (!user) {
+		return {
+			field: "root",
+			message: "Unauthorized",
+		};
+	}
+
+	try {
+		await db
+			.update(TB_trip)
+			.set({ ...input })
+			.where(eq(TB_trip.id, id));
+
+		revalidatePath("/");
+	} catch (e) {
+		return {
+			field: "root",
+			message: "An unexpected error occured, please try again later",
+		};
+	}
+}
+
+async function EditTripInfoAction(
+	id: string,
+	input: z.infer<typeof tripInfoFormPublishedSchema>,
 ): Promise<TripInfoFormError | undefined> {
 	"use server";
 

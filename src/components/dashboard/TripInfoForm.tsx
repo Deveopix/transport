@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
 	TripInfoFormError,
 	tripInfoFormPartialSchema,
+	tripInfoFormPublishedSchema,
 } from "@/lib/zodSchemas/dashboardSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { startTransition, useEffect, useOptimistic } from "react";
@@ -29,26 +30,50 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+type TripInfoFormProps = {
+	tripInfo: z.infer<typeof tripInfoFormPartialSchema>;
+} & (
+	| {
+			published: true;
+			editTripInfoAction: (
+				input: z.infer<typeof tripInfoFormPublishedSchema>,
+			) => Promise<TripInfoFormError | undefined>;
+	  }
+	| {
+			published?: false;
+			updateTripInfoAction: (
+				input: z.infer<typeof tripInfoFormPartialSchema>,
+			) => Promise<TripInfoFormError | undefined>;
+	  }
+);
+
 export default function TripInfoForm({
 	tripInfo,
-	updateTripInfoAction,
-}: {
-	tripInfo: z.infer<typeof tripInfoFormPartialSchema>;
-	updateTripInfoAction: (
-		input: z.infer<typeof tripInfoFormPartialSchema>,
-	) => Promise<TripInfoFormError | undefined>;
-}) {
+	...props
+}: TripInfoFormProps) {
 	const [optTripInfo, setTripInfo] = useOptimistic(tripInfo);
 
-	const form = useForm<z.infer<typeof tripInfoFormPartialSchema>>({
-		resolver: zodResolver(tripInfoFormPartialSchema),
+	const schema = props.published
+		? tripInfoFormPublishedSchema
+		: tripInfoFormPartialSchema;
+
+	const form = useForm<z.infer<typeof schema>>({
+		resolver: zodResolver(schema),
 		defaultValues: optTripInfo,
 	});
 
-	async function onSubmit(values: z.infer<typeof tripInfoFormPartialSchema>) {
+	async function onSubmit(values: z.infer<typeof schema>) {
 		startTransition(async () => {
-			setTripInfo(values);
-			const error = await updateTripInfoAction(values);
+			setTripInfo({
+				...optTripInfo,
+				...values,
+			});
+
+			const error = props.published
+				? // @ts-ignore
+					await props.editTripInfoAction(values)
+				: // @ts-ignore
+					await props.updateTripInfoAction(values);
 
 			if (error) {
 				form.setError(
@@ -83,7 +108,11 @@ export default function TripInfoForm({
 								<FormItem>
 									<FormLabel>اسم الرحلة</FormLabel>
 									<FormControl>
-										<Input {...field} value={field.value ?? ""} />
+										<Input
+											{...field}
+											value={field.value ?? ""}
+											readOnly={props.published}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -99,6 +128,7 @@ export default function TripInfoForm({
 										<DateTimePicker
 											jsDate={field.value}
 											onJsDateChange={field.onChange}
+											isReadOnly={props.published}
 										/>
 									</FormControl>
 									<FormMessage />

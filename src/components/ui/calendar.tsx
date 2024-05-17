@@ -417,7 +417,7 @@ const DateTimePicker = React.forwardRef<
 						"h-5 w-5 cursor-pointer text-primary/30",
 						!jsDatetime && "hidden",
 					)}
-					onClick={() => setJsDatetime(null)}
+					onClick={() => !fieldProps.isReadOnly && setJsDatetime(null)}
 				/>
 			</div>
 		</div>
