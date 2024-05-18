@@ -18,9 +18,14 @@ import { z } from "zod";
 export default function BookTrip({
 	forward,
 	backward,
+	userBookAction,
 }: {
 	forward: TripTime[];
 	backward: TripTime[];
+	userBookAction: (input: {
+		forwardId: string;
+		backwardId: string;
+	}) => Promise<{ error?: string }>;
 }) {
 	const schema = z.object({
 		forwardId: z
@@ -35,8 +40,14 @@ export default function BookTrip({
 		resolver: zodResolver(schema),
 	});
 
-	function onSubmit(values: z.infer<typeof schema>) {
-		console.log(values);
+	async function onSubmit(values: z.infer<typeof schema>) {
+		const result = await userBookAction(values);
+
+		if (result.error) {
+			form.setError("forwardId", { message: result.error });
+			return;
+		}
+		form.reset();
 	}
 
 	return (
