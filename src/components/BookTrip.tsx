@@ -60,7 +60,7 @@ export default function BookTrip({
 				onSubmit={form.handleSubmit(onSubmit)}
 				className="flex w-full flex-col items-start gap-8"
 			>
-				<div className="flex  items-center justify-center gap-2 text-2xl">
+				<div className="flex items-center justify-center gap-2 text-2xl">
 					<CounterClockwise className="h-[35px] w-[35px]" />
 					<span>اوقات الذهاب</span>
 				</div>
@@ -68,7 +68,7 @@ export default function BookTrip({
 					control={form.control}
 					name="forwardId"
 					render={({ field }) => (
-						<FormItem className="space-y-3">
+						<FormItem>
 							<FormControl>
 								<RadioGroup
 									onValueChange={field.onChange}
@@ -77,7 +77,10 @@ export default function BookTrip({
 									className="flex flex-col gap-2"
 								>
 									{forward.map((time) => (
-										<FormItem key={time.id} className="flex gap-3 p-2">
+										<FormItem
+											key={time.id}
+											className="flex items-center gap-3 space-y-0 p-2"
+										>
 											<FormControl>
 												<RadioGroupItem value={time.id} id={time.id} />
 											</FormControl>
@@ -96,7 +99,7 @@ export default function BookTrip({
 					)}
 				/>
 
-				<div className="flex  items-center justify-center gap-2 text-2xl">
+				<div className="flex items-center justify-center gap-2 text-2xl">
 					<Clockwise className="h-[35px] w-[35px]" />
 					<span>اوقات العودة</span>
 				</div>
@@ -104,7 +107,7 @@ export default function BookTrip({
 					control={form.control}
 					name="backwardId"
 					render={({ field }) => (
-						<FormItem className="space-y-3">
+						<FormItem>
 							<FormControl>
 								<RadioGroup
 									onValueChange={field.onChange}
@@ -113,7 +116,10 @@ export default function BookTrip({
 									className="flex flex-col gap-2"
 								>
 									{backward.map((time) => (
-										<FormItem key={time.id} className="flex gap-3 p-2">
+										<FormItem
+											key={time.id}
+											className="flex items-center gap-3 space-y-0 p-2"
+										>
 											<FormControl>
 												<RadioGroupItem value={time.id} id={time.id} />
 											</FormControl>
