@@ -39,7 +39,7 @@ export async function RegisterAction(
 		try {
 			await db.insert(TB_user).values(newUser);
 		} catch {
-			return { field: "email", message: "Email is already used" };
+			return { field: "phonenumber", message: "Phonenumber is already used!" };
 		}
 
 		const session = await lucia.createSession(newUser.id, {});

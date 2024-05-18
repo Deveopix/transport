@@ -13,7 +13,7 @@ import { z } from "zod";
 export const TB_user = pgTable("user", {
 	id: text("id").primaryKey(),
 	username: text("username").notNull(),
-	email: text("email").unique().notNull(),
+	phonenumber: text("phonenumber").unique().notNull(),
 	password: text("password").notNull(),
 });
 
@@ -133,7 +133,10 @@ export const RE_tripVote = relations(TB_tripVote, ({ one }) => ({
 }));
 
 export const userSchema = createSelectSchema(TB_user);
-export const userViewSchema = userSchema.pick({ username: true, email: true });
+export const userViewSchema = userSchema.pick({
+	username: true,
+	phonenumber: true,
+});
 
 export type UserType = z.infer<typeof userSchema>;
 export type UserViewType = z.infer<typeof userViewSchema>;

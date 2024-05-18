@@ -26,11 +26,11 @@ async function LoginAction(
 		const data = await loginFormSchema.parseAsync(input);
 
 		const user = await db.query.TB_user.findFirst({
-			where: (user, { eq }) => eq(user.email, data.email),
+			where: (user, { eq }) => eq(user.phonenumber, data.phonenumber),
 		});
 
 		if (!user || user.password != hash(data.password)) {
-			return { field: "root", message: "Email or password is incorrect" };
+			return { field: "root", message: "Phonenumber or password is incorrect" };
 		}
 
 		const session = await lucia.createSession(user.id, {});

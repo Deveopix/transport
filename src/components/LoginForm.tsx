@@ -9,16 +9,11 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { LoginFormError } from "@/lib/zodSchemas/authSchemas";
+import { LoginFormError, loginFormSchema } from "@/lib/zodSchemas/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-const loginFormSchema = z.object({
-	email: z.string().email(),
-	password: z.string().min(8).max(32),
-});
 
 export function LoginForm({
 	loginAction,
@@ -30,7 +25,7 @@ export function LoginForm({
 	const form = useForm<z.infer<typeof loginFormSchema>>({
 		resolver: zodResolver(loginFormSchema),
 		defaultValues: {
-			email: "",
+			phonenumber: "",
 			password: "",
 		},
 	});
@@ -63,11 +58,11 @@ export function LoginForm({
 				</div>
 				<FormField
 					control={form.control}
-					name="email"
+					name="phonenumber"
 					render={({ field }) => (
 						<FormItem>
 							<FormControl>
-								<Input placeholder="البريد الالكتروني" {...field} />
+								<Input placeholder="رقم الهاتف" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>

@@ -1,9 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { getUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function TripsPage() {
+	const user = await getUser();
+
+	if (!user) {
+		redirect("/login");
+	}
+
 	const trips = await db.query.TB_trip.findMany({
 		where: (trips, { eq }) => eq(trips.published, true),
 	});

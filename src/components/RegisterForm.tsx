@@ -23,7 +23,7 @@ export default function RegisterForm({
 		resolver: zodResolver(registerFormSchema),
 		defaultValues: {
 			username: "",
-			email: "",
+			phonenumber: "",
 			password: "",
 		},
 	});
@@ -69,11 +69,11 @@ export default function RegisterForm({
 				/>
 				<FormField
 					control={form.control}
-					name="email"
+					name="phonenumber"
 					render={({ field }) => (
 						<FormItem>
 							<FormControl>
-								<Input placeholder="البريد الالكتروني" {...field} />
+								<Input placeholder="رقم الهاتف" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
