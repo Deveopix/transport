@@ -13,7 +13,7 @@ import { z } from "zod";
 export const TB_user = pgTable("user", {
 	id: text("id").primaryKey(),
 	username: text("username").notNull(),
-	email: text("email").notNull(),
+	email: text("email").unique().notNull(),
 	password: text("password").notNull(),
 });
 
@@ -89,7 +89,8 @@ export const RE_tripTime = relations(TB_tripTime, ({ many, one }) => ({
 		fields: [TB_tripTime.tripId],
 		references: [TB_trip.id],
 	}),
-	tripVotes: many(TB_tripVote),
+	forwardTripVotes: many(TB_tripVote, { relationName: "forward_trip_time" }),
+	backwardTripVotes: many(TB_tripVote, { relationName: "backward_trip_time" }),
 }));
 
 export const TB_tripVote = pgTable(
@@ -116,10 +117,12 @@ export const TB_tripVote = pgTable(
 
 export const RE_tripVote = relations(TB_tripVote, ({ one }) => ({
 	forwardTripTime: one(TB_tripTime, {
+		relationName: "forward_trip_time",
 		fields: [TB_tripVote.forwardTripTimeId],
 		references: [TB_tripTime.id],
 	}),
 	backwardTripTime: one(TB_tripTime, {
+		relationName: "backward_trip_time",
 		fields: [TB_tripVote.backwardTripTimeId],
 		references: [TB_tripTime.id],
 	}),
@@ -137,3 +140,4 @@ export type UserViewType = z.infer<typeof userViewSchema>;
 
 export type Trip = typeof TB_trip.$inferSelect;
 export type TripTime = typeof TB_tripTime.$inferSelect;
+export type TripVote = typeof TB_tripVote.$inferSelect;

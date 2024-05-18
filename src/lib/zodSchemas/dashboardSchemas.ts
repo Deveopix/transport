@@ -3,8 +3,16 @@ import { z } from "zod";
 
 export const tripInfoFormSchema = z.object({
 	name: z.string().min(1).max(32),
-	voteEnd: z.date(),
 	tripDate: z.date(),
+	voteEnd: z.date(),
+	notes: z
+		.string()
+		.nullable()
+		.transform((x) => x || null),
+});
+
+export const tripInfoFormPublishedSchema = z.object({
+	voteEnd: z.date(),
 	notes: z
 		.string()
 		.nullable()
@@ -14,12 +22,11 @@ export const tripInfoFormSchema = z.object({
 export const tripInfoFormPartialSchema = z.object({
 	name: z
 		.string()
-		.min(1)
 		.max(32)
 		.nullable()
 		.transform((x) => x || null),
-	voteEnd: z.date().nullable(),
 	tripDate: z.date().nullable(),
+	voteEnd: z.date().nullable(),
 	notes: z
 		.string()
 		.nullable()
