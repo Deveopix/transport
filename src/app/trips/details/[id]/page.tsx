@@ -1,4 +1,5 @@
 import BookTrip from "@/components/BookTrip";
+import { userBook } from "@/components/userBook";
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 
@@ -43,7 +44,11 @@ export default async function TripDetails({ params }: TripDetailsProps) {
 					</span>
 				</div>
 			</div>
-			<BookTrip forward={forward} backward={backward} />
+			<BookTrip
+				forward={forward}
+				backward={backward}
+				userBookAction={userBook}
+			/>
 		</section>
 	);
 }

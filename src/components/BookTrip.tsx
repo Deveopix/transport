@@ -9,21 +9,23 @@ import {
 	FormLabel,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { getUser } from "@/lib/auth";
-import { db } from "@/lib/db";
 import { Clockwise, CounterClockwise } from "@/lib/icons";
-import { TB_tripVote, TripTime } from "@/lib/schema";
+import { TripTime } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { nanoid } from "nanoid";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 export default function BookTrip({
 	forward,
 	backward,
+	userBookAction,
 }: {
 	forward: TripTime[];
 	backward: TripTime[];
+	userBookAction: (input: {
+		forwardId: string;
+		backwardId: string;
+	}) => Promise<{ error?: string }>;
 }) {
 	const schema = z.object({
 		forwardId: z
@@ -39,22 +41,13 @@ export default function BookTrip({
 	});
 
 	async function onSubmit(values: z.infer<typeof schema>) {
-		const user = await getUser();
-		if (!user || !user.id) {
-			return { error: "User not found" };
+		const result = await userBookAction(values);
+
+		if (result.error) {
+			form.setError("forwardId", { message: result.error });
+			return;
 		}
-		//
-		const vote = {
-			id: nanoid(),
-			userId: user?.id,
-			forwardTripTimeId: values.forwardId,
-			backwardTripTimeId: values.backwardId,
-		};
-		try {
-			await db.insert(TB_tripVote).values(vote);
-		} catch {
-			return { error: "error" };
-		}
+		form.reset();
 	}
 
 	return (
