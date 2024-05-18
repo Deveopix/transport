@@ -11,9 +11,10 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Clockwise, CounterClockwise } from "@/lib/icons";
 import { TripTime } from "@/lib/schema";
+import { BaseZodError } from "@/lib/zodSchemas/errorUtils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { ZodUnknown, z } from "zod";
 
 export default function BookTrip({
 	forward,
@@ -25,7 +26,7 @@ export default function BookTrip({
 	userBookAction: (input: {
 		forwardId: string;
 		backwardId: string;
-	}) => Promise<{ error?: string }>;
+	}) => Promise<BaseZodError<ZodUnknown> | undefined>;
 }) {
 	const schema = z.object({
 		forwardId: z
@@ -41,13 +42,16 @@ export default function BookTrip({
 	});
 
 	async function onSubmit(values: z.infer<typeof schema>) {
-		const result = await userBookAction(values);
+		const error = await userBookAction(values);
 
-		if (result.error) {
-			form.setError("forwardId", { message: result.error });
+		if (error) {
+			form.setError(
+				error.field,
+				{ message: error.message },
+				{ shouldFocus: true },
+			);
 			return;
 		}
-		form.reset();
 	}
 
 	return (

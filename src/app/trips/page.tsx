@@ -7,7 +7,7 @@ export default async function TripsPage() {
 	const trips = await db.query.TB_trip.findMany({
 		where: (trips, { eq }) => eq(trips.published, true),
 	});
-	const receivedtrips = [trips[0]];
+	const receivedtrips = trips.length > 0 ? [trips[0]] : [];
 
 	return (
 		<section className="container flex flex-col gap-16 p-8">
